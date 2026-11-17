@@ -1,0 +1,179 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Global safety net: deny all unspecified paths by default
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // --- Global Hardened Primitives ---
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isVerifiedUser() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function isOwner(userId) {
+      return isVerifiedUser() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isVerifiedUser() && (
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid)) ||
+        request.auth.token.email == 'ajaymaurya44368@gmail.com' ||
+        request.auth.token.email == 'ajay.0251mba772@dgu.ac.in'
+      );
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    // --- Validation Blueprints ---
+    function isValidWishlist(list) {
+      return list is list
+        && list.size() <= 50
+        && (list.size() == 0 || (list[0] is string && list[0].size() >= 1 && list[0].size() <= 64));
+    }
+
+    function isValidUser(data, userId) {
+      return data.keys().hasAll(['uid', 'displayName', 'email', 'wishlist', 'createdAt', 'updatedAt'])
+        && data.keys().hasOnly(['uid', 'displayName', 'email', 'wishlist', 'createdAt', 'updatedAt'])
+        && data.uid is string && data.uid == userId && data.uid == request.auth.uid
+        && data.displayName is string && data.displayName.size() >= 1 && data.displayName.size() <= 100
+        && data.email is string && data.email.size() >= 3 && data.email.size() <= 160
+        && isValidWishlist(data.wishlist)
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidBooking(data) {
+      return data.keys().hasAll([
+          'reference', 'userId', 'productId', 'productName', 'unitPrice',
+          'quantity', 'totalAmount', 'customerName', 'phone', 'address',
+          'pincode', 'status', 'createdAt', 'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'reference', 'userId', 'productId', 'productName', 'unitPrice',
+          'quantity', 'totalAmount', 'customerName', 'phone', 'address',
+          'pincode', 'instructions', 'finishPreference', 'status', 'createdAt', 'updatedAt'
+        ])
+        && data.reference is string && data.reference.size() >= 5 && data.reference.size() <= 16 && data.reference.matches('^KS-[0-9]{6}$')
+        && data.userId is string && data.userId.size() >= 1 && data.userId.size() <= 128
+        && data.productId is string && isValidId(data.productId)
+        && data.productName is string && data.productName.size() >= 1 && data.productName.size() <= 120
+        && (data.unitPrice is int || data.unitPrice is float) && data.unitPrice > 0 && data.unitPrice <= 1000000
+        && data.quantity is int && data.quantity >= 1 && data.quantity <= 20
+        && (data.totalAmount is int || data.totalAmount is float) && data.totalAmount > 0 && data.totalAmount <= 20000000
+        && data.customerName is string && data.customerName.size() >= 1 && data.customerName.size() <= 100
+        && data.phone is string && data.phone.size() >= 7 && data.phone.size() <= 20
+        && data.address is string && data.address.size() >= 5 && data.address.size() <= 500
+        && data.pincode is string && data.pincode.size() == 6 && data.pincode.matches('^[0-9]{6}$')
+        && (!('instructions' in data) || (data.instructions is string && data.instructions.size() <= 300))
+        && (!('finishPreference' in data) || (data.finishPreference is string && data.finishPreference.size() <= 80))
+        && data.status is string && data.status in ['New', 'Confirmed', 'In Carving', 'Dispatched', 'Delivered', 'Cancelled']
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidReview(data) {
+      return data.keys().hasAll(['productId', 'userId', 'customerName', 'comment', 'rating', 'createdAt'])
+        && data.keys().hasOnly(['productId', 'userId', 'customerName', 'comment', 'rating', 'createdAt'])
+        && data.productId is string && isValidId(data.productId)
+        && data.userId is string && data.userId == request.auth.uid && data.userId.size() <= 128
+        && data.customerName is string && data.customerName.size() >= 1 && data.customerName.size() <= 60
+        && data.comment is string && data.comment.size() >= 1 && data.comment.size() <= 500
+        && data.rating is int && data.rating >= 1 && data.rating <= 5
+        && data.createdAt is timestamp;
+    }
+
+    // --- Collection Rules ---
+
+    // Connection test probe document (read-only)
+    match /test/connection {
+      allow get: if true;
+      allow list, create, update, delete: if false;
+    }
+
+    // Trusted admins lookup collection (managed out-of-band via console/Admin SDK)
+    match /admins/{adminId} {
+      allow get: if isOwner(adminId);
+      allow list, create, update, delete: if false;
+    }
+
+    // Private User Profiles & Wishlists (PII isolated)
+    match /users/{userId} {
+      allow get: if isValidId(userId) && (isOwner(userId) || isAdmin());
+      allow list: if isAdmin();
+      allow create: if isValidId(userId)
+        && isOwner(userId)
+        && isValidUser(incoming(), userId)
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time;
+      allow update: if isValidId(userId)
+        && isOwner(userId)
+        && isValidUser(incoming(), userId)
+        && incoming().uid == existing().uid
+        && incoming().email == existing().email
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && incoming().diff(existing()).affectedKeys().hasOnly(['displayName', 'wishlist', 'updatedAt']);
+      allow delete: if false;
+    }
+
+    // Customer Bookings (PII isolated to owner or Store Admin)
+    match /bookings/{bookingId} {
+      allow get: if isValidId(bookingId) && isVerifiedUser() && (existing().userId == request.auth.uid || isAdmin());
+      allow list: if isVerifiedUser() && (existing().userId == request.auth.uid || isAdmin());
+      allow create: if isValidId(bookingId)
+        && isVerifiedUser()
+        && isValidBooking(incoming())
+        && incoming().userId == request.auth.uid
+        && incoming().status == 'New'
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time;
+      allow update: if isValidId(bookingId)
+        && isVerifiedUser()
+        && isValidBooking(incoming())
+        && incoming().userId == existing().userId
+        && incoming().reference == existing().reference
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && (
+          // Tier 1: Store Admin status management
+          (isAdmin() && incoming().diff(existing()).affectedKeys().hasOnly(['status', 'updatedAt'])) ||
+          // Tier 2: Customer cancellation only from non-terminal active states
+          (
+            existing().userId == request.auth.uid
+            && existing().status in ['New', 'Confirmed']
+            && incoming().status == 'Cancelled'
+            && incoming().diff(existing()).affectedKeys().hasOnly(['status', 'updatedAt'])
+          )
+        );
+      allow delete: if isValidId(bookingId) && isAdmin();
+    }
+
+    // Verified Product Reviews (No PII stored; publicly readable)
+    match /reviews/{reviewId} {
+      allow get: if isValidId(reviewId);
+      allow list: if true;
+      allow create: if isValidId(reviewId)
+        && isVerifiedUser()
+        && isValidReview(incoming())
+        && incoming().createdAt == request.time;
+      allow update: if false;
+      allow delete: if isValidId(reviewId) && isVerifiedUser() && (existing().userId == request.auth.uid || isAdmin());
+    }
+  }
+}

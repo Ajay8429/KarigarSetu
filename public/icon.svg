@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="woodBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#55301a"/>
+      <stop offset="50%" stop-color="#6b3f25"/>
+      <stop offset="100%" stop-color="#3b2112"/>
+    </linearGradient>
+    <linearGradient id="goldAcc" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f5d799"/>
+      <stop offset="100%" stop-color="#c8923a"/>
+    </linearGradient>
+    <radialGradient id="ringGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="70%" stop-color="#000000" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0.3"/>
+    </radialGradient>
+  </defs>
+  <!-- Background with safe-zone margin for maskable icon compliance -->
+  <rect width="512" height="512" rx="112" fill="url(#woodBg)"/>
+  <rect width="512" height="512" rx="112" fill="url(#ringGlow)"/>
+
+  <!-- Subtle concentric wood grain rings -->
+  <circle cx="256" cy="256" r="190" fill="none" stroke="#875333" stroke-width="2.5" opacity="0.45"/>
+  <circle cx="256" cy="256" r="150" fill="none" stroke="#875333" stroke-width="2" stroke-dasharray="8 6" opacity="0.35"/>
+  <circle cx="256" cy="256" r="105" fill="none" stroke="#875333" stroke-width="1.8" opacity="0.3"/>
+
+  <!-- Central Artisanal Woodcraft Emblem -->
+  <g transform="translate(256 256) scale(1.05) translate(-256 -256)">
+    <!-- Ornate Jali floral arch element -->
+    <path d="M176 340 C176 250, 210 180, 256 160 C302 180, 336 250, 336 340 Z" fill="#4a2a16" stroke="url(#goldAcc)" stroke-width="6"/>
+    <!-- Intricate tree / woodcarving flourish -->
+    <path d="M256 335 L256 210 M256 260 C236 240, 210 245, 206 266 M256 280 C276 260, 302 265, 306 286 M256 230 C240 215, 222 220, 218 235 M256 230 C272 215, 290 220, 294 235" 
+          fill="none" stroke="url(#goldAcc)" stroke-width="5" stroke-linecap="round"/>
+    
+    <!-- Crossed traditional carving chisels -->
+    <g transform="rotate(45 256 230)">
+      <rect x="251" y="160" width="10" height="140" rx="4" fill="#d8c4b0"/>
+      <path d="M246 160 L266 160 L256 142 Z" fill="#f7eee3"/>
+      <rect x="249" y="240" width="14" height="70" rx="3" fill="#8c5835"/>
+      <rect x="247" y="306" width="18" height="6" rx="2" fill="url(#goldAcc)"/>
+    </g>
+    <g transform="rotate(-45 256 230)">
+      <rect x="251" y="160" width="10" height="140" rx="4" fill="#d8c4b0"/>
+      <path d="M246 160 L266 160 L256 142 Z" fill="#f7eee3"/>
+      <rect x="249" y="240" width="14" height="70" rx="3" fill="#8c5835"/>
+      <rect x="247" y="306" width="18" height="6" rx="2" fill="url(#goldAcc)"/>
+    </g>
+
+    <!-- Base badge / bridge element (Setu) -->
+    <rect x="146" y="340" width="220" height="28" rx="8" fill="#351d0f" stroke="url(#goldAcc)" stroke-width="3"/>
+    <text x="256" y="360" font-family="'Cinzel', serif" font-weight="700" font-size="16" fill="#f5d799" text-anchor="middle" letter-spacing="3">KARIGARSETU</text>
+  </g>
+</svg>

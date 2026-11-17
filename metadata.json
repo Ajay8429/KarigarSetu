@@ -1,0 +1,6 @@
+{
+  "name": "KarigarSetu - Saharanpur Woodcrafts & Furniture",
+  "description": "Artisanal marketplace and direct booking platform for handcrafted Sheesham wood décor, furniture, and gifts from Saharanpur master carvers.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

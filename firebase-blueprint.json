@@ -1,0 +1,204 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Authenticated customer profile and bounded wishlist stored privately per user.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "Firebase Auth UID of the user",
+          "maxLength": 128
+        },
+        "displayName": {
+          "type": "string",
+          "description": "Display name of the customer",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "Verified email address of the user",
+          "maxLength": 160
+        },
+        "wishlist": {
+          "type": "array",
+          "description": "Bounded list of product IDs saved by the user (max 50)"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server creation timestamp"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server last update timestamp"
+        }
+      },
+      "required": ["uid", "displayName", "email", "wishlist", "createdAt", "updatedAt"]
+    },
+    "Booking": {
+      "title": "Booking",
+      "description": "Handcrafted woodcraft delivery booking submitted by an authenticated customer.",
+      "type": "object",
+      "properties": {
+        "reference": {
+          "type": "string",
+          "description": "Unique booking reference code (e.g. KS-123456)",
+          "pattern": "^KS-[0-9]{6}$",
+          "maxLength": 12
+        },
+        "userId": {
+          "type": "string",
+          "description": "UID of the customer who placed the booking",
+          "maxLength": 128
+        },
+        "productId": {
+          "type": "string",
+          "description": "Product identifier",
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "maxLength": 64
+        },
+        "productName": {
+          "type": "string",
+          "description": "Name of the product",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "unitPrice": {
+          "type": "number",
+          "description": "Unit price in INR"
+        },
+        "quantity": {
+          "type": "integer",
+          "description": "Ordered quantity (1 to 20)"
+        },
+        "totalAmount": {
+          "type": "number",
+          "description": "Total order value in INR"
+        },
+        "customerName": {
+          "type": "string",
+          "description": "Recipient full name",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "phone": {
+          "type": "string",
+          "description": "Recipient contact phone number",
+          "minLength": 7,
+          "maxLength": 20
+        },
+        "address": {
+          "type": "string",
+          "description": "Full delivery street address",
+          "minLength": 5,
+          "maxLength": 500
+        },
+        "pincode": {
+          "type": "string",
+          "description": "6-digit Indian postal PIN code",
+          "pattern": "^[0-9]{6}$",
+          "maxLength": 6
+        },
+        "instructions": {
+          "type": "string",
+          "description": "Optional customization or delivery notes",
+          "maxLength": 300
+        },
+        "finishPreference": {
+          "type": "string",
+          "description": "Selected wood polish/finish",
+          "maxLength": 80
+        },
+        "status": {
+          "type": "string",
+          "enum": ["New", "Confirmed", "In Carving", "Dispatched", "Delivered", "Cancelled"],
+          "description": "Fulfillment lifecycle status"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server creation timestamp"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server update timestamp"
+        }
+      },
+      "required": [
+        "reference",
+        "userId",
+        "productId",
+        "productName",
+        "unitPrice",
+        "quantity",
+        "totalAmount",
+        "customerName",
+        "phone",
+        "address",
+        "pincode",
+        "status",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "Review": {
+      "title": "Review",
+      "description": "Verified customer review on a wooden craft item (no PII stored).",
+      "type": "object",
+      "properties": {
+        "productId": {
+          "type": "string",
+          "description": "Product identifier",
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "maxLength": 64
+        },
+        "userId": {
+          "type": "string",
+          "description": "Firebase Auth UID of the reviewer",
+          "maxLength": 128
+        },
+        "customerName": {
+          "type": "string",
+          "description": "Public display name of the reviewer",
+          "minLength": 1,
+          "maxLength": 60
+        },
+        "comment": {
+          "type": "string",
+          "description": "Review feedback text",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "rating": {
+          "type": "integer",
+          "description": "Star rating from 1 to 5"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server creation timestamp"
+        }
+      },
+      "required": ["productId", "userId", "customerName", "comment", "rating", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "Private customer profile and wishlist documents, readable only by owner or admin."
+    },
+    "/bookings/{bookingId}": {
+      "schema": { "$ref": "#/entities/Booking" },
+      "description": "Customer woodcraft bookings with PII isolation and admin fulfillment status control."
+    },
+    "/reviews/{reviewId}": {
+      "schema": { "$ref": "#/entities/Review" },
+      "description": "Publicly readable verified product reviews with author ownership checks."
+    }
+  }
+}
