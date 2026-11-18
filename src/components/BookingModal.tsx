@@ -3,6 +3,7 @@ import type { User } from 'firebase/auth';
 import { Product, Booking } from '../types';
 import { formatINR } from '../data/products';
 import { X, CheckCircle2, MessageCircle, Copy, Check, Truck, Shield, LogIn } from 'lucide-react';
+import { buildWhatsAppLink, WHATSAPP_DISPLAY } from '../config/contact';
 
 interface BookingModalProps {
   product: Product | null;
@@ -119,7 +120,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
   };
 
   const getWhatsAppUrl = () => {
-    const text = encodeURIComponent(
+    return buildWhatsAppLink(
       `Hello KarigarSetu! 🪵 I want to confirm my booking:\n\n` +
       `*Order Ref:* ${submittedBooking ? submittedBooking.reference : 'New Inquiry'}\n` +
       `*Product:* ${product.name} (Qty: ${quantity})\n` +
@@ -131,7 +132,6 @@ export const BookingModal: React.FC<BookingModalProps> = ({
       `${instructions ? `*Note:* ${instructions}\n` : ''}\n` +
       `Please confirm estimated delivery date and safe packaging.`
     );
-    return `https://wa.me/919876543210?text=${text}`;
   };
 
   return (
@@ -188,7 +188,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                   <span className="font-bold">{formatINR(submittedBooking.total_amount)}</span>
                 </div>
                 <div className="text-[11px] text-[#7d7168]">
-                  Saved to: {user ? 'Firebase Cloud Account' : isDbConnected ? 'Supabase Database' : 'This Device (Guest Mode)'}
+                  Saved to: {user ? 'Your Account & Store Orders (Firestore)' : 'Store Orders (Firestore) & This Device'}
                 </div>
               </div>
 
@@ -232,7 +232,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                 <img
                   src={product.image}
                   alt={product.name}
-                  className="w-14 h-14 rounded-lg object-cover border border-[#dfcbb5]"
+                  className="w-14 h-14 rounded-lg object-contain bg-[#f7f1e8] p-0.5 border border-[#dfcbb5]"
                 />
                 <div className="flex-1 min-w-0">
                   <div className="text-sm font-bold text-[#2e2118] truncate">{product.name}</div>
@@ -326,7 +326,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                     required
                     minLength={7}
                     maxLength={20}
-                    placeholder="+91 98765 43210"
+                    placeholder={WHATSAPP_DISPLAY}
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     className="w-full p-2.5 text-xs bg-white border border-[#dfcbb5] rounded-lg focus:ring-1 focus:ring-[#6b3f25] focus:outline-none"

@@ -1,7 +1,8 @@
 import React from 'react';
 import { Product } from '../types';
 import { formatINR } from '../data/products';
-import { X, ShoppingBag, ShieldCheck, Check, Sparkles, MapPin, MessageCircle } from 'lucide-react';
+import { X, ShoppingBag, Check, MapPin, MessageCircle } from 'lucide-react';
+import { buildWhatsAppLink } from '../config/contact';
 
 interface ProductModalProps {
   product: Product | null;
@@ -19,10 +20,9 @@ export const ProductModal: React.FC<ProductModalProps> = ({
   if (!isOpen || !product) return null;
 
   const getWhatsAppProductUrl = () => {
-    const text = encodeURIComponent(
+    return buildWhatsAppLink(
       `Hello KarigarSetu! 🪵 I am interested in *${product.name}* (${formatINR(product.price)}). Could you provide details on custom dimensions and shipping time?`
     );
-    return `https://wa.me/919876543210?text=${text}`;
   };
 
   return (
@@ -39,11 +39,11 @@ export const ProductModal: React.FC<ProductModalProps> = ({
 
         <div className="grid grid-cols-1 md:grid-cols-2">
           {/* Left: Product Image Box */}
-          <div className="relative bg-[#f4ecdf] p-6 flex items-center justify-center">
+          <div className="relative bg-[#f7f1e8] p-6 flex items-center justify-center min-h-[300px]">
             <img
               src={product.image}
               alt={product.name}
-              className="w-full h-auto max-h-[380px] object-cover rounded-xl shadow-md border border-[#dfcbb5]"
+              className="w-full h-auto max-h-[420px] object-contain rounded-xl"
             />
             <div className="absolute top-4 left-4 bg-white/95 px-2.5 py-1 rounded-md text-[11px] font-semibold uppercase tracking-wider text-[#3c543f] border border-[#dfcbb5]">
               {product.category}

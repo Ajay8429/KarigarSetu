@@ -137,9 +137,11 @@ service cloud.firestore {
       allow get: if isValidId(bookingId) && isVerifiedUser() && (existing().userId == request.auth.uid || isAdmin());
       allow list: if isVerifiedUser() && (existing().userId == request.auth.uid || isAdmin());
       allow create: if isValidId(bookingId)
-        && isVerifiedUser()
         && isValidBooking(incoming())
-        && incoming().userId == request.auth.uid
+        && (
+          (isVerifiedUser() && incoming().userId == request.auth.uid) ||
+          (!isSignedIn() && incoming().userId == 'guest')
+        )
         && incoming().status == 'New'
         && incoming().createdAt == request.time
         && incoming().updatedAt == request.time;

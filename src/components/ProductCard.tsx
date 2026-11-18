@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import type { User } from 'firebase/auth';
 import { Product, Comment } from '../types';
 import { formatINR } from '../data/products';
-import { MessageSquare, Eye, ShoppingCart, Star, Send, Heart, Trash2, LogIn } from 'lucide-react';
+import { MessageSquare, Eye, ShoppingCart, Star, Send, Heart, Trash2, LogIn, ImageOff } from 'lucide-react';
 
 interface ProductCardProps {
   product: Product;
@@ -36,6 +36,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   const [commentText, setCommentText] = useState('');
   const [rating, setRating] = useState(5);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [imgError, setImgError] = useState(false);
 
   useEffect(() => {
     if (user?.displayName && !name) {
@@ -63,17 +64,22 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   return (
     <article className="flex flex-col bg-white rounded-2xl border border-[#ead8c3] overflow-hidden shadow-sm hover:shadow-md transition-shadow">
       {/* Product Image Box */}
-      <div className="relative aspect-[4/3] w-full bg-[#f4ecdf] overflow-hidden group">
-        <img
-          src={product.image}
-          alt={product.name}
-          className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-300"
-          referrerPolicy="no-referrer"
-          loading="lazy"
-          onError={(e) => {
-            (e.target as HTMLElement).style.display = 'none';
-          }}
-        />
+      <div className="relative aspect-[4/3] w-full bg-[#f7f1e8] overflow-hidden group flex items-center justify-center p-2">
+        {imgError ? (
+          <div className="flex flex-col items-center justify-center text-center p-4 text-[#8c5835] gap-2">
+            <ImageOff className="w-8 h-8 opacity-60" />
+            <span className="text-xs font-semibold">{product.name}</span>
+          </div>
+        ) : (
+          <img
+            src={product.image}
+            alt={product.name}
+            className="w-full h-full object-contain group-hover:scale-103 transition-transform duration-300 rounded-lg"
+            referrerPolicy="no-referrer"
+            loading="lazy"
+            onError={() => setImgError(true)}
+          />
+        )}
         <div className="absolute top-3 left-3 bg-[#fbf6ef]/95 px-2.5 py-1 rounded-md text-[11px] font-semibold tracking-wider text-[#3c543f] uppercase border border-[#dfcbb5]">
           {product.category}
         </div>

@@ -16,7 +16,6 @@ import { Product, Comment, Booking, SupabaseConfig } from './types';
 import {
   fetchComments,
   fetchBookings,
-  createBooking,
   updateBookingStatus,
   getSupabaseConfig,
   saveSupabaseConfig
@@ -35,6 +34,7 @@ import { ArtisanCollectiveSection } from './components/ArtisanCollectiveSection'
 import { ContactSection } from './components/ContactSection';
 import { Footer } from './components/Footer';
 import { OfflineBanner } from './components/OfflineBanner';
+import { buildWhatsAppLink } from './config/contact';
 
 import { Search, Info, Heart } from 'lucide-react';
 
@@ -234,11 +234,18 @@ export default function App() {
   const handleSubmitBooking = async (
     bookingData: Omit<Booking, 'reference' | 'created_at' | 'status'>
   ): Promise<Booking> => {
-    if (user) {
-      return await createFirestoreBooking(user, bookingData);
+    const created = await createFirestoreBooking(user, bookingData);
+    if (!user) {
+      // Also store local receipt for guest customer's own browser session
+      try {
+        const key = 'karigarsetu_bookings_v2';
+        const existing = JSON.parse(localStorage.getItem(key) || '[]');
+        localStorage.setItem(key, JSON.stringify([created, ...existing]));
+      } catch {
+        // Ignore localStorage quota issues
+      }
+      setBookings((prev) => [created, ...prev]);
     }
-    const created = await createBooking(bookingData);
-    setBookings((prev) => [created, ...prev]);
     return created;
   };
 
@@ -282,7 +289,7 @@ export default function App() {
           }}
           onWhatsAppInquiry={() => {
             window.open(
-              'https://wa.me/919876543210?text=Hello%20KarigarSetu!%20I%20would%20like%20to%20inquire%20about%20custom%20handcrafted%20woodcraft.',
+              buildWhatsAppLink('Hello KarigarSetu! I would like to inquire about custom handcrafted woodcraft.'),
               '_blank'
             );
           }}

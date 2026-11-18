@@ -7,8 +7,8 @@
    - `wishlist` is strictly bounded (`wishlist.size() <= 50`) and cannot contain arbitrary oversized objects.
    - No self-assigned admin or role fields are allowed in `/users/{userId}`.
 2. **Booking (`/bookings/{bookingId}`)**:
-   - Contains customer PII (`phone`, `address`, `pincode`). Readable (`get` and `list`) ONLY where `resource.data.userId == request.auth.uid` or `isAdmin()`.
-   - On creation, `userId` must equal `request.auth.uid`, `status` must equal `'New'`, `createdAt == request.time`, `updatedAt == request.time`, `pincode` must match `^[0-9]{6}$`, and `quantity` must be between `1` and `20`.
+   - Contains customer PII (`phone`, `address`, `pincode`). Readable (`get` and `list`) ONLY where `isVerifiedUser()` and (`resource.data.userId == request.auth.uid` or `isAdmin()`). Guest orders (`userId == 'guest'`) are strictly unreadable by non-admins.
+   - On creation, verified users must set `userId == request.auth.uid`, and unauthenticated guests must set `userId == 'guest'`; `status` must equal `'New'`, `createdAt == request.time`, `updatedAt == request.time`, `pincode` must match `^[0-9]{6}$`, and `quantity` must be between `1` and `20`.
    - Owners can only cancel (`status == 'Cancelled'`) when current `status` is `'New'` or `'Confirmed'` and cannot tamper with `unitPrice`, `totalAmount`, `userId`, or `createdAt`.
    - Terminal states (`Delivered`, `Cancelled`) are locked against customer modifications; only Store Admin can update status transitions.
 3. **Review (`/reviews/{reviewId}`)**:

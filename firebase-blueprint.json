@@ -52,7 +52,7 @@
         },
         "userId": {
           "type": "string",
-          "description": "UID of the customer who placed the booking",
+          "description": "UID of the customer who placed the booking, or 'guest' for guest checkout",
           "maxLength": 128
         },
         "productId": {

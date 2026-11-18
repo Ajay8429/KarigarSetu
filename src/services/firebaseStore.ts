@@ -137,16 +137,17 @@ export function subscribeBookings(
  * Create a new booking in Firestore strictly matching firebase-blueprint.json & firestore.rules.
  */
 export async function createFirestoreBooking(
-  user: User,
+  user: User | null,
   data: Omit<Booking, 'reference' | 'created_at' | 'status' | 'id' | 'userId'>
 ): Promise<Booking> {
   const reference = 'KS-' + Math.floor(100000 + Math.random() * 900000).toString();
   const docId = reference;
   const path = `bookings/${docId}`;
+  const effectiveUserId = user ? user.uid : 'guest';
 
   const payload: Record<string, unknown> = {
     reference,
-    userId: user.uid,
+    userId: effectiveUserId,
     productId: data.product_id.slice(0, 64),
     productName: data.product_name.slice(0, 120),
     unitPrice: Number(data.unit_price),
@@ -173,7 +174,7 @@ export async function createFirestoreBooking(
     return {
       id: docId,
       reference,
-      userId: user.uid,
+      userId: effectiveUserId,
       product_id: data.product_id,
       product_name: data.product_name,
       unit_price: data.unit_price,

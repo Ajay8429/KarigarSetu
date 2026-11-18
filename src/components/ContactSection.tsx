@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { MessageCircle, Phone, Mail, MapPin, ChevronDown, Send, ShieldCheck, Clock } from 'lucide-react';
+import { MessageCircle, Phone, Mail, MapPin, ChevronDown, Send } from 'lucide-react';
+import { buildWhatsAppLink, WHATSAPP_DISPLAY, PHONE_LINK } from '../config/contact';
 
 export const ContactSection: React.FC = () => {
   const [openFaq, setOpenFaq] = useState<number | null>(0);
@@ -30,10 +31,10 @@ export const ContactSection: React.FC = () => {
   const handleCustomSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!customName.trim() || !customPhone.trim()) return;
-    const text = encodeURIComponent(
+    const url = buildWhatsAppLink(
       `Hello KarigarSetu! My name is ${customName}. I have a custom woodcraft request:\n"${customMsg}"\nPlease contact me at ${customPhone}.`
     );
-    window.open(`https://wa.me/919876543210?text=${text}`, '_blank');
+    window.open(url, '_blank');
     setSentCustom(true);
   };
 
@@ -58,7 +59,7 @@ export const ContactSection: React.FC = () => {
             {/* Direct Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <a
-                href="https://wa.me/919876543210?text=Hello%20KarigarSetu%2C%20I%20am%20interested%20in%20Saharanpur%20handcrafted%20wooden%20products."
+                href={buildWhatsAppLink('Hello KarigarSetu, I am interested in Saharanpur handcrafted wooden products.')}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-4 rounded-xl bg-[#25D366]/10 border border-[#25D366]/30 hover:bg-[#25D366]/15 transition-colors flex items-start gap-3 group"
@@ -69,14 +70,14 @@ export const ContactSection: React.FC = () => {
                 <div>
                   <div className="text-xs font-bold text-[#1e7e34]">WhatsApp Order Desk</div>
                   <div className="text-sm font-semibold text-[#2e2118] group-hover:text-emerald-800">
-                    +91 98765 43210
+                    {WHATSAPP_DISPLAY}
                   </div>
                   <div className="text-[11px] text-[#5c5249]">Mon - Sat: 9 AM - 8 PM IST</div>
                 </div>
               </a>
 
               <a
-                href="tel:+919876543210"
+                href={PHONE_LINK}
                 className="p-4 rounded-xl bg-white border border-[#ead8c3] hover:bg-[#faf5ef] transition-colors flex items-start gap-3"
               >
                 <div className="p-2.5 rounded-lg bg-[#6b3f25] text-white">
@@ -85,7 +86,7 @@ export const ContactSection: React.FC = () => {
                 <div>
                   <div className="text-xs font-bold text-[#8c5835]">Direct Phone Helpline</div>
                   <div className="text-sm font-semibold text-[#2e2118]">
-                    +91 (0132) 276-5432
+                    {WHATSAPP_DISPLAY}
                   </div>
                   <div className="text-[11px] text-[#5c5249]">Hindi & English Support</div>
                 </div>

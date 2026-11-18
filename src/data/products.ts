@@ -1,4 +1,10 @@
 import { Product } from '../types';
+import carvedFrameImg from '../assets/images/product_carved_frame_1792925323111.jpg';
+import jewelleryBoxImg from '../assets/images/product_jewellery_box_1792925323651.jpg';
+import wallPanelImg from '../assets/images/product_wall_panel_1792925323990.jpg';
+import sideTableImg from '../assets/images/product_side_table_1792925324555.jpg';
+import woodenLampImg from '../assets/images/product_wooden_lamp_1792925325796.jpg';
+import keepsakeBoxImg from '../assets/images/product_keepsake_box_1792925325625.jpg';
 
 export const products: Product[] = [
   {
@@ -6,7 +12,7 @@ export const products: Product[] = [
     name: 'Carved Photo Frame',
     category: 'Home Decor',
     price: 799,
-    image: '/src/assets/images/product_carved_frame_1792925323111.jpg',
+    image: carvedFrameImg,
     desc: 'Hand-carved solid Sheesham wooden frame with traditional floral vine motifs for treasured family memories.',
     artisan: 'Master Mohammad Rashid',
     artisanVillage: 'Mohalla Saraian, Saharanpur',
@@ -27,7 +33,7 @@ export const products: Product[] = [
     name: 'Wooden Jewellery Box',
     category: 'Gifts',
     price: 1199,
-    image: '/src/assets/images/product_jewellery_box_1792925323651.jpg',
+    image: jewelleryBoxImg,
     desc: 'Ornate handcrafted keepsake box adorned with delicate hand-beaten brass wire inlay and emerald velvet lining.',
     artisan: 'Ustad Irfan Ansari',
     artisanVillage: 'Qutub Sher, Saharanpur',
@@ -48,7 +54,7 @@ export const products: Product[] = [
     name: 'Decorative Wall Panel',
     category: 'Home Decor',
     price: 2499,
-    image: '/src/assets/images/product_wall_panel_1792925323990.jpg',
+    image: wallPanelImg,
     desc: 'Traditional pierced Jali lattice carved panel featuring geometric star mandalas for living rooms and prayer alcoves.',
     artisan: 'Master Abdul Sattar',
     artisanVillage: 'Chilkana Road, Saharanpur',
@@ -69,7 +75,7 @@ export const products: Product[] = [
     name: 'Handcrafted Side Table',
     category: 'Furniture',
     price: 3499,
-    image: '/src/assets/images/product_side_table_1792925324555.jpg',
+    image: sideTableImg,
     desc: 'Sturdy Sheesham wood accent table featuring hand-carved floral rosette tabletop and graceful cabriole legs.',
     artisan: 'Rameshwar Sharma & Sons',
     artisanVillage: 'Pansari Bazar, Saharanpur',
@@ -90,7 +96,7 @@ export const products: Product[] = [
     name: 'Wooden Table Lamp',
     category: 'Lighting',
     price: 1899,
-    image: '/src/assets/images/product_wooden_lamp_1792925325796.jpg',
+    image: woodenLampImg,
     desc: 'Turned wooden baluster lamp base paired with textured natural oatmeal linen drum shade for soothing illumination.',
     artisan: 'Farhan Qureshi',
     artisanVillage: 'Nakur, Saharanpur',
@@ -111,7 +117,7 @@ export const products: Product[] = [
     name: 'Carved Keepsake Box',
     category: 'Gifts',
     price: 999,
-    image: '/src/assets/images/product_keepsake_box_1792925325625.jpg',
+    image: keepsakeBoxImg,
     desc: 'Arch-lid heirloom chest with embossed brass clasp and hand-chiseled mandala medallion on the cover.',
     artisan: 'Master Mohammad Rashid',
     artisanVillage: 'Mohalla Saraian, Saharanpur',

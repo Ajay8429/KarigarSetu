@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import type { User } from 'firebase/auth';
 import { Booking } from '../types';
 import { formatINR } from '../data/products';
-import { X, Search, FileText, Download, Check, Copy, Printer, ShieldCheck, LogIn } from 'lucide-react';
+import { X, Search, FileText, Download, Check, Copy, Printer, ShieldCheck, LogIn, MessageCircle } from 'lucide-react';
 
 interface BookingsDrawerProps {
   isOpen: boolean;
@@ -305,21 +305,42 @@ export const BookingsDrawer: React.FC<BookingsDrawerProps> = ({
                     )}
                   </div>
 
-                  <div className="flex items-center justify-between text-xs text-[#82746a] pt-1">
+                  <div className="flex items-center justify-between text-xs text-[#82746a] pt-1 gap-2">
                     <span>
-                      Booked on {new Date(b.created_at).toLocaleDateString('en-IN', {
+                      {new Date(b.created_at).toLocaleDateString('en-IN', {
                         day: 'numeric',
                         month: 'short',
                         year: 'numeric'
                       })}
+                      {isAdmin && (
+                        <>
+                          {' · '}
+                          <span className="font-medium text-[#5b3820]">
+                            {b.userId === 'guest' ? 'Guest Checkout' : 'Verified Account'}
+                          </span>
+                        </>
+                      )}
                     </span>
-                    <button
-                      onClick={() => handlePrintSlip(b)}
-                      className="flex items-center gap-1 text-[#6b3f25] font-semibold hover:underline"
-                    >
-                      <Printer className="w-3.5 h-3.5" />
-                      <span>Print Slip</span>
-                    </button>
+                    <div className="flex items-center gap-3">
+                      {isAdmin && b.phone && (
+                        <a
+                          href={`https://wa.me/${b.phone.replace(/\D/g, '').replace(/^0+/, '')}?text=${encodeURIComponent(`Hello ${b.customer_name}, regarding your KarigarSetu booking ${b.reference} for ${b.product_name}...`)}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-1 text-emerald-700 font-semibold hover:underline"
+                        >
+                          <MessageCircle className="w-3.5 h-3.5" />
+                          <span>WhatsApp</span>
+                        </a>
+                      )}
+                      <button
+                        onClick={() => handlePrintSlip(b)}
+                        className="flex items-center gap-1 text-[#6b3f25] font-semibold hover:underline"
+                      >
+                        <Printer className="w-3.5 h-3.5" />
+                        <span>Print Slip</span>
+                      </button>
+                    </div>
                   </div>
                 </div>
               );

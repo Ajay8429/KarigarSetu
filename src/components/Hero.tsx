@@ -1,5 +1,6 @@
 import React from 'react';
 import { ArrowDown, MessageCircle, ShieldCheck, Sparkles, MapPin } from 'lucide-react';
+import heroWorkshopImg from '../assets/images/hero_saharanpur_woodcraft_1792925323380.jpg';
 
 interface HeroProps {
   onExploreClick: () => void;
@@ -66,7 +67,7 @@ export const Hero: React.FC<HeroProps> = ({ onExploreClick, onWhatsAppInquiry })
           <div className="lg:col-span-5 relative">
             <div className="relative rounded-2xl overflow-hidden border border-[#ead8c3] shadow-xl bg-[#ead8c3]">
               <img
-                src="/src/assets/images/hero_saharanpur_woodcraft_1792925323380.jpg"
+                src={heroWorkshopImg}
                 alt="Master woodcarver carving floral jali hardwood in Saharanpur workshop"
                 className="w-full h-80 sm:h-96 lg:h-[420px] object-cover"
                 referrerPolicy="no-referrer"
